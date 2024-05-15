@@ -22,8 +22,19 @@ def timeConvert(time: str) -> str:
 def relevantStocks():
     # alphavantage stuff - the code below is for news sentiments that talk about what's going on with bigger stocks n stuff
     url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey={getApiKey()}"
-    r = requests.get(url)
-    parsedData = r.json()
+    try:
+        r = requests.get(url)
+        r.raise_for_status()
+        parsedData = r.json()
+        # print(parsedData)
+        if "Information" in parsedData:
+            print(f"Daily API Limit REACHED BRUVVV :{parsedData['Information']}")
+            return f"Daily API Limit REACHED BRUVVV :{parsedData['Information']}"
+
+    except requests.exceptions.HTTPError as e:
+        print(e)
+        return f"HTTP ERROR OCCURED BRUV: {e}"
+
     for item in parsedData["feed"]:
         for topic in item["topics"]:
             relevance = float(topic["relevance_score"])  # conv to float
@@ -51,14 +62,68 @@ def relevantStocks():
 
 def topGainers():
     url = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={getApiKey()}"
-    r = requests.get(url)
-    data = r.json()
-    print(data)
+    try:
+        r = requests.get(url)
+        r.raise_for_status()
+        data = r.json()
+        # print(parsedData)
+        if "Information" in data:
+            print(f"Daily API Limit REACHED BRUVVV :{data['Information']}")
+            return f"Daily API Limit REACHED BRUVVV :{data['Information']}"
+
+    except requests.exceptions.HTTPError as e:
+        print(e)
+        return f"HTTP ERROR OCCURED BRUV: {e}"
+    i = 0
+    # print("last updated:", data["last_updated"])
+    print("Top 10 Gainers")
+    for item in data["top_gainers"]:
+        if i == 10:
+            i = 0
+            break
+        else:
+            print(f"Ticker: {item['ticker']}")
+            print(f"Price: {item['price']}")
+            print(f"Change In Numbers: {item['change_amount']}")
+            print(f"Percentage Change: {item['change_percentage']}")
+            print(f"Volume: {item['volume']}")
+            i += 1
+
+
+def topLosers():
+    url = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={getApiKey()}"
+    try:
+        r = requests.get(url)
+        r.raise_for_status()
+        data = r.json()
+        # print(parsedData)
+        if "Information" in data:
+            print(f"Daily API Limit REACHED BRUVVV :{data['Information']}")
+            return f"Daily API Limit REACHED BRUVVV :{data['Information']}"
+
+    except requests.exceptions.HTTPError as e:
+        print(e)
+        return f"HTTP ERROR OCCURED BRUV: {e}"
+    j = 0
+    print("Top 10 Losers")
+    for item in data["top_losers"]:
+        if j == 10:
+            j = 0
+            break
+        else:
+            print(f"Ticker: {item['ticker']}")
+            print(f"Price: {item['price']}")
+            print(f"Change In Numbers: {item['change_amount']}")
+            print(f"Percentage Change: {item['change_percentage']}")
+            print(f"Volume: {item['volume']}")
+            j += 1
 
 
 # relevantStocks()
-topGainers()
+# topGainers()
+# topLosers()
 
-tker = "AAPL"
-aapl = yf.Ticker(tker)
-# print(aapl.income_stmt)
+
+# tker = "AAPL"
+# aapl = yf.Ticker(tker)
+# # print(aapl.income_stmt)
