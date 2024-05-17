@@ -19,9 +19,7 @@ def timeConvert(time: str) -> str:
     return parsedTime
 
 
-def relevantStocks():
-    # alphavantage stuff - the code below is for news sentiments that talk about what's going on with bigger stocks n stuff
-    url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey={getApiKey()}"
+def expireyCheck(url: str):
     try:
         r = requests.get(url)
         r.raise_for_status()
@@ -29,12 +27,23 @@ def relevantStocks():
         # print(parsedData)
         if "Information" in parsedData:
             print(f"Daily API Limit REACHED BRUVVV :{parsedData['Information']}")
-            return f"Daily API Limit REACHED BRUVVV :{parsedData['Information']}"
+            return {
+                "error": f"Daily API Limit REACHED BRUVVV :{parsedData['Information']}"
+            }
+        return parsedData
 
     except requests.exceptions.HTTPError as e:
         print(e)
-        return f"HTTP ERROR OCCURED BRUV: {e}"
+        return {"error": f"HTTP ERROR OCCURED BRUV: {e}"}
 
+
+def relevantStocks():
+    # alphavantage stuff - the code below is for news sentiments that talk about what's going on with bigger stocks n stuff
+    url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey={getApiKey()}"
+    parsedData = expireyCheck(url)
+    message = parsedData.get("error", None)
+    if message:
+        return message
     for item in parsedData["feed"]:
         for topic in item["topics"]:
             relevance = float(topic["relevance_score"])  # conv to float
@@ -57,23 +66,18 @@ def relevantStocks():
                 print("  Relevance Score:", ticker_sentiment["relevance_score"])
                 print("  Sentiment Score:", ticker_sentiment["ticker_sentiment_score"])
                 print("  Sentiment Label:", ticker_sentiment["ticker_sentiment_label"])
-    # alphavantage stuff - the code below is for news sentiments that talk about what's going on with bigger stocks n stuff
+
+
+# relevantStocks()
+# alphavantage stuff - the code below is for news sentiments that talk about what's going on with bigger stocks n stuff
 
 
 def topGainers():
     url = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={getApiKey()}"
-    try:
-        r = requests.get(url)
-        r.raise_for_status()
-        data = r.json()
-        # print(parsedData)
-        if "Information" in data:
-            print(f"Daily API Limit REACHED BRUVVV :{data['Information']}")
-            return f"Daily API Limit REACHED BRUVVV :{data['Information']}"
-
-    except requests.exceptions.HTTPError as e:
-        print(e)
-        return f"HTTP ERROR OCCURED BRUV: {e}"
+    data = expireyCheck(url)
+    message = data.get("error", None)
+    if message:
+        return message
     i = 0
     # print("last updated:", data["last_updated"])
     print("Top 10 Gainers")
@@ -90,20 +94,13 @@ def topGainers():
             i += 1
 
 
+# topGainers()
 def topLosers():
     url = f"https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={getApiKey()}"
-    try:
-        r = requests.get(url)
-        r.raise_for_status()
-        data = r.json()
-        # print(parsedData)
-        if "Information" in data:
-            print(f"Daily API Limit REACHED BRUVVV :{data['Information']}")
-            return f"Daily API Limit REACHED BRUVVV :{data['Information']}"
-
-    except requests.exceptions.HTTPError as e:
-        print(e)
-        return f"HTTP ERROR OCCURED BRUV: {e}"
+    data = expireyCheck(url)
+    message = data.get("error", None)
+    if message:
+        return message
     j = 0
     print("Top 10 Losers")
     for item in data["top_losers"]:
@@ -119,8 +116,6 @@ def topLosers():
             j += 1
 
 
-# relevantStocks()
-# topGainers()
 # topLosers()
 
 
