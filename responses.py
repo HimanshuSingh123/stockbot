@@ -1,5 +1,6 @@
 from random import choice, randint
 import stocks
+import jsonreal
 
 
 def getHello():
@@ -30,6 +31,10 @@ def empty():
     return "You aint send anything"
 
 
+def store():
+    return jsonreal.data_store(relevantStocks())
+
+
 Responses = {
     "": empty,  # removed parentheses because then it wont call function on dictionary initialization, but rather wait till it gets called by a user via another function
     "hello": getHello,
@@ -47,6 +52,8 @@ def getResponse(input: str):
     for key, value in Responses.items():
         if key == lowered:
             return value()
+        elif lowered == "store":
+            return store()
     return choice(["ion understand you", "run that back", "Cant understand you"])
 
 

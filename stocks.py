@@ -66,6 +66,7 @@ def relevantStocks():
                 print("  Relevance Score:", ticker_sentiment["relevance_score"])
                 print("  Sentiment Score:", ticker_sentiment["ticker_sentiment_score"])
                 print("  Sentiment Label:", ticker_sentiment["ticker_sentiment_label"])
+    return parsedData  # testing to store JSON data
 
 
 # relevantStocks()
